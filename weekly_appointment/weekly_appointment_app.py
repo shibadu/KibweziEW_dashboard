@@ -1,9 +1,7 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
-import matplotlib.pyplot as plt
 from datetime import datetime
 
 st.set_page_config(page_title="Weekly Appointment Dashboard", layout="wide")
@@ -27,7 +25,6 @@ def fetch_kobo_data(token, asset_uid):
 if KOBO_TOKEN and ASSET_UID:
     try:
         df = fetch_kobo_data(KOBO_TOKEN, ASSET_UID)
-
         st.success("Data loaded successfully.")
 
         # Select numeric columns for conversion
@@ -43,22 +40,38 @@ if KOBO_TOKEN and ASSET_UID:
         # Date column processing
         if 'start' in df.columns:
             df['start_date'] = pd.to_datetime(df['start'], errors='coerce')
-            df['week'] = df['start_date'].dt.to_period('W').astype(str)
-            weekly_summary = df.groupby('week')[num_cols].sum().reset_index()
+            df['date_end'] = df['start_date'] + pd.to_timedelta(6 - df['start_date'].dt.weekday, unit='D')
+            df['date_end'] = df['date_end'].dt.date
 
-            # --- Main Plot ---
-            st.subheader("📊 Weekly Appointment Trends")
-            fig, ax = plt.subplots(figsize=(14, 6))
-            weekly_summary.set_index('week')[['booked', 'honored', 'missed']].plot(kind='bar', stacked=False, ax=ax)
-            ax.set_ylabel("Counts")
-            ax.set_title("Weekly Booked vs Honored vs Missed Appointments")
-            ax.legend(title="Status")
-            ax.tick_params(axis='x', rotation=45)
-            st.pyplot(fig)
+            # Sidebar filter for week ending
+            week_options = sorted(df['date_end'].dropna().unique())
+            selected_week = st.sidebar.selectbox("Select Week Ending", week_options)
+            df = df[df['date_end'] == selected_week]
 
-            # --- Summary Table ---
-            st.subheader("📋 Weekly Summary Table")
-            st.dataframe(weekly_summary)
+            # Compute metrics
+            df['% Honored'] = (df['honored'] / df['booked']) * 100
+            df['% Traced Back'] = np.where(df['missed'] > 0, (df['traced_back'] / df['missed']) * 100, np.nan)
+            df['% Prior Called'] = (df['prior_call'] / df['booked']) * 100
+
+            # Select and rename columns for display
+            display_df = df[['health_facility', 'booked', 'honored', '% Honored', 'missed',
+                             'traced_back', '% Traced Back', 'prior_call', '% Prior Called']]
+            display_df.columns = ['Facility Name', 'Booked', 'Honored', '% Honored', 'Missed',
+                                  'Traced Back', '% Traced Back', 'Prior Calls', '% Prior Called']
+
+            # Style the table with color gradients
+            styled_table = display_df.style.background_gradient(
+                subset=['% Honored', '% Traced Back', '% Prior Called'],
+                cmap='RdYlGn'
+            ).format({
+                '% Honored': '{:.2f}%',
+                '% Traced Back': '{:.2f}%',
+                '% Prior Called': '{:.2f}%'
+            })
+
+            # Display the styled table
+            st.subheader("📊 Weekly Appointment Metrics")
+            st.dataframe(styled_table)
 
         else:
             st.warning("Missing 'start' column for date processing.")
