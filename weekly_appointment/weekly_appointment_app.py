@@ -4,12 +4,13 @@ import numpy as np
 import requests
 from datetime import datetime
 
+KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
+ASSET_UID = "acbnBWmKaSwFH3duCpXeYz"
+
 st.set_page_config(page_title="Weekly Appointment Dashboard", layout="wide")
 
 # --- Sidebar: Configuration ---
-st.sidebar.title("Data Source")
-KOBO_TOKEN = st.sidebar.text_input("Enter Kobo Token", type="password", value="5d64990c18958166334c29d4664653d2d0c20649")
-ASSET_UID = st.sidebar.text_input("Enter Asset UID", value="acbnBWmKaSwFH3duCpXeYz")
+st.sidebar.title("Appointment Dashboard")
 
 # Fetch KoboToolbox data
 @st.cache_data(ttl=3600)
@@ -70,7 +71,7 @@ if KOBO_TOKEN and ASSET_UID:
             })
 
             # Display the styled table
-            st.subheader("📊 Weekly Appointment Metrics")
+            st.subheader("📊 Weekly Appointment Data")
             st.dataframe(styled_table)
 
         else:
