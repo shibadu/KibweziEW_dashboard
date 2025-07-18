@@ -46,8 +46,8 @@ if KOBO_TOKEN and ASSET_UID:
             'To (Thursday reporting week):': 'date_end'
         })
 
-        df['date_start'] = pd.to_datetime(df['week_start'], errors='coerce')
-        df['date_end'] = pd.to_datetime(df['week_end'], errors='coerce')
+        df['date_start'] = pd.to_datetime(df['date_start'], errors='coerce')
+        df['date_end'] = pd.to_datetime(df['date_end'], errors='coerce')
 
         # Sidebar date range filter
         min_date = df['date_start'].min().date()
@@ -82,8 +82,8 @@ if KOBO_TOKEN and ASSET_UID:
         st.dataframe(styled_table)
 
         # Weekly trends for all data
-        df = df.dropna(subset=['week_start', 'week_end'])
-        df['week'] = df['week_start'].dt.strftime('%Y-%m-%d') + ' to ' + df['week_end'].dt.strftime('%Y-%m-%d')
+        df = df.dropna(subset=['date_start', 'date_end'])
+        df['week'] = df['date_start'].dt.strftime('%Y-%m-%d') + ' to ' + df['date_end'].dt.strftime('%Y-%m-%d')
 
         weekly = df.groupby('week').agg({
             'booked': 'sum',
