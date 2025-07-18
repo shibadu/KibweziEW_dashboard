@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
+import matplotlib.pyplot as plt
 from datetime import datetime
 
 KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
@@ -28,7 +29,7 @@ if KOBO_TOKEN and ASSET_UID:
         df = fetch_kobo_data(KOBO_TOKEN, ASSET_UID)
         st.success("Data loaded successfully.")
 
-        # Select numeric columns for conversion
+        # Convert numeric columns
         num_cols = [
             'booked', 'ushauri', 'prior_call', 'messages', 'rescheduled',
             'honored', 'missed', 'traced_back', 'traced_back_physical',
@@ -38,29 +39,31 @@ if KOBO_TOKEN and ASSET_UID:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
 
-        # Date column processing
+        # Date processing
         if 'start' in df.columns:
             df['start_date'] = pd.to_datetime(df['start'], errors='coerce')
             df['date_end'] = df['start_date'] + pd.to_timedelta(6 - df['start_date'].dt.weekday, unit='D')
             df['date_end'] = df['date_end'].dt.date
+            # Sidebar date range filter
+            min_date = df['start_date'].min().date()
+            max_date = df['start_date'].max().date()
+            start_filter = st.sidebar.date_input("Start Date", min_value=min_date, max_value=max_date, value=min_date)
+            end_filter = st.sidebar.date_input("End Date", min_value=min_date, max_value=max_date, value=max_date)
 
-            # Sidebar filter for week ending
-            week_options = sorted(df['date_end'].dropna().unique())
-            selected_week = st.sidebar.selectbox("Select Week Ending", week_options)
-            df = df[df['date_end'] == selected_week]
+            # Filter table data
+            filtered_df = df[(df['start_date'].dt.date >= start_filter) & (df['start_date'].dt.date <= end_filter)].copy()
 
             # Compute metrics
-            df['% Honored'] = (df['honored'] / df['booked']) * 100
-            df['% Traced Back'] = np.where(df['missed'] > 0, (df['traced_back'] / df['missed']) * 100, np.nan)
-            df['% Prior Called'] = (df['prior_call'] / df['booked']) * 100
+            filtered_df['% Honored'] = (filtered_df['honored'] / filtered_df['booked']) * 100
+            filtered_df['% Traced Back'] = np.where(filtered_df['missed'] > 0, (filtered_df['traced_back'] / filtered_df['missed']) * 100, np.nan)
+            filtered_df['% Prior Called'] = (filtered_df['prior_call'] / filtered_df['booked']) * 100
 
-            # Select and rename columns for display
-            display_df = df[['health_facility', 'booked', 'honored', '% Honored', 'missed',
-                             'traced_back', '% Traced Back', 'prior_call', '% Prior Called']]
+            # Display table
+            display_df = filtered_df[['health_facility', 'booked', 'honored', '% Honored', 'missed',
+                                      'traced_back', '% Traced Back', 'prior_call', '% Prior Called']]
             display_df.columns = ['Facility Name', 'Booked', 'Honored', '% Honored', 'Missed',
                                   'Traced Back', '% Traced Back', 'Prior Calls', '% Prior Called']
 
-            # Style the table with color gradients
             styled_table = display_df.style.background_gradient(
                 subset=['% Honored', '% Traced Back', '% Prior Called'],
                 cmap='RdYlGn'
@@ -70,14 +73,8 @@ if KOBO_TOKEN and ASSET_UID:
                 '% Prior Called': '{:.2f}%'
             })
 
-            # Display the styled table
-            st.subheader("📊 Weekly Appointment Data")
+            st.subheader("📊 Weekly Appointment Data (Filtered)")
             st.dataframe(styled_table)
 
-        else:
-            st.warning("Missing 'start' column for date processing.")
-
-    except Exception as e:
-        st.error(f"Error loading data: {e}")
-else:
-    st.info("Please enter your Kobo Token and Asset UID to load data.")
+            # Weekly trends for all data
+            df['week'] = df['start_date'].dt.to_period('W').apply(lambda r: r.start_time.date().strftime('%Y-%m
