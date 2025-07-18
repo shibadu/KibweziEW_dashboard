@@ -56,7 +56,7 @@ if KOBO_TOKEN and ASSET_UID:
         end_filter = st.sidebar.date_input("End Date", min_value=min_date, max_value=max_date, value=max_date)
 
         # Filter table data
-        filtered_df = df[(df['week_start'].dt.date >= start_filter) & (df['week_end'].dt.date <= end_filter)].copy()
+        filtered_df = df[(df['date_start'].dt.date >= start_filter) & (df['date_end'].dt.date <= end_filter)].copy()
 
         # Compute metrics
         filtered_df['% Honored'] = (filtered_df['honored'] / filtered_df['booked']) * 100
