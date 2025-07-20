@@ -1,16 +1,27 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import requests
 
 st.set_page_config(page_title="HTS Summary Dashboard", layout="wide")
 st.sidebar.title("HTS Dashboard")
 
 # Load your data
 @st.cache_data
-
 def load_data():
-    # Replace with actual file path or data loading logic
-    df_hts = pd.read_csv("hts_data.csv")  # You can change to Excel or Kobo API if needed
+    KOBO_TOKEN = '5d64990c18958166334c29d4664653d2d0c20649'
+    ASSET_UID = 'aLUUWLzQ2Lz6W28asUxvQ6'
+
+    headers = {
+        'Authorization': f'Token {KOBO_TOKEN}'
+    }
+
+    url = f'https://kf.kobotoolbox.org/api/v2/assets/{ASSET_UID}/data.json?format=labels'
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+
+    data = response.json()['results']
+    df_hts = pd.json_normalize(data)
     df_hts['date'] = pd.to_datetime(df_hts['date_test'], errors='coerce')
 
     # Calculate percentages
