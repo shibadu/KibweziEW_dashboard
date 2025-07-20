@@ -9,8 +9,8 @@ st.sidebar.title("HTS Dashboard")
 # Fetch KoboToolbox data
 @st.cache_data(ttl=3600)
 def fetch_kobo_data(token, asset_uid):
-    headers = {'Authorization': f'Token {token}'}
-    url = f'https://kf.kobotoolbox.org/api/v2/assets/{asset_uid}/data.json?format=labels'
+    headers = {'Authorization': f'Token {KOBO_TOKEN}'}
+    url = f'https://kf.kobotoolbox.org/api/v2/assets/{ASSET_UID}/data.json?format=labels'
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     raw_data = response.json()['results']
