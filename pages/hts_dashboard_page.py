@@ -17,8 +17,8 @@ def fetch_kobo_data(token, asset_uid):
     return pd.json_normalize(raw_data)
 
 # Kobo credentials
-KOBO_TOKEN = "<your_kobo_token_here>"
-ASSET_UID = "<your_asset_uid_here>"
+KOBO_TOKEN = '5d64990c18958166334c29d4664653d2d0c20649'  # Replace with your actual token
+ASSET_UID = 'aLUUWLzQ2Lz6W28asUxvQ6'
 
 # Load data
 try:
