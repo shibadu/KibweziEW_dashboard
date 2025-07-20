@@ -3,31 +3,41 @@ import pandas as pd
 import numpy as np
 import requests
 
+# KoboToolbox credentials
+KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
+ASSET_UID = "aLUUWLzQ2Lz6W28asUxvQ6"
+
 st.set_page_config(page_title="HTS Summary Dashboard", layout="wide")
 st.sidebar.title("HTS Dashboard")
 
-# Load your data
-@st.cache_data
-def load_data():
-    KOBO_TOKEN = '5d64990c18958166334c29d4664653d2d0c20649'
-    ASSET_UID = 'aLUUWLzQ2Lz6W28asUxvQ6'
-
-    headers = {
-        'Authorization': f'Token {KOBO_TOKEN}'
-    }
-
-    url = f'https://kf.kobotoolbox.org/api/v2/assets/{ASSET_UID}/data.json?format=labels'
+# Fetch KoboToolbox data
+@st.cache_data(ttl=3600)
+def fetch_kobo_data(token, asset_uid):
+    headers = {'Authorization': f'Token {token}'}
+    url = f'https://kf.kobotoolbox.org/api/v2/assets/{asset_uid}/data.json?format=labels'
     response = requests.get(url, headers=headers)
     response.raise_for_status()
+    raw_data = response.json()['results']
+    return pd.json_normalize(raw_data)
 
-    data = response.json()['results']
-    df_hts = pd.json_normalize(data)
-    df_hts['date'] = pd.to_datetime(df_hts['date_test'], errors='coerce')
+# Load data
+try:
+    df_hts = fetch_kobo_data(KOBO_TOKEN, ASSET_UID)
+    st.success("✅ Data loaded successfully from KoboToolbox.")
+except Exception as e:
+    st.error(f"❌ Failed to load data from KoboToolbox: {e}")
+    df_hts = pd.DataFrame()
 
-    # Calculate percentages
-    df_hts['% Screened'] = (df_hts['screened'] / df_hts['workload']) * 100
-    df_hts['% Positive'] = (df_hts['total_pos'] / df_hts['total_test']) * 100
-    return df_hts
+# Ensure required columns exist and are numeric
+for col in ['screened', 'workload', 'total_pos', 'total_test']:
+    df_hts[col] = pd.to_numeric(df_hts.get(col), errors='coerce')
+
+if 'hivst' not in df_hts.columns:
+    df_hts['hivst'] = 0
+
+df_hts['date'] = pd.to_datetime(df_hts.get('date_test'), errors='coerce')
+df_hts['% Screened'] = (df_hts['screened'] / df_hts['workload']) * 100
+df_hts['% Positive'] = (df_hts['total_pos'] / df_hts['total_test']) * 100
 
 # Highlighting function
 def highlight_percent(val):
@@ -35,9 +45,6 @@ def highlight_percent(val):
     if val >= 90: return 'background-color: lightgreen'
     elif val >= 50: return 'background-color: khaki'
     else: return 'background-color: lightcoral'
-
-# Load data
-df_hts = load_data()
 
 # ---------------------- Page Content ----------------------
 st.title("📈 HTS Summary Reports")
