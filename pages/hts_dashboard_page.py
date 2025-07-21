@@ -31,6 +31,39 @@ df_hts['date'] = pd.to_datetime(df_hts['date_test'])
 df_hts['% Screened'] = (df_hts['screened'] / df_hts['workload']) * 100
 df_hts['% Positive'] = (df_hts['total_pos'] / df_hts['total_test']) * 100
 
+# Sidebar filters
+st.sidebar.header("Filters")
+
+# Date filter
+min_date = df_hts['date'].min()
+max_date = df_hts['date'].max()
+start_date, end_date = st.sidebar.date_input(
+    "Select date range:",
+    value=(min_date, max_date),
+    min_value=min_date,
+    max_value=max_date
+)
+
+# Counselor filter
+counselors = ['All'] + sorted(df_hts['counselor_name'].dropna().unique().tolist())
+selected_counselor = st.sidebar.selectbox("Select Counselor", counselors)
+
+# Facility filter
+facilities = ['All'] + sorted(df_hts['health_facility'].dropna().unique().tolist())
+selected_facility = st.sidebar.selectbox("Select Facility", facilities)
+
+# Apply filters
+df_hts_filtered = df_hts[
+    (df_hts['date'] >= pd.to_datetime(start_date)) &
+    (df_hts['date'] <= pd.to_datetime(end_date))
+]
+
+if selected_counselor != 'All':
+    df_hts_filtered = df_hts_filtered[df_hts_filtered['counselor_name'] == selected_counselor]
+
+if selected_facility != 'All':
+    df_hts_filtered = df_hts_filtered[df_hts_filtered['health_facility'] == selected_facility]
+
 # Summary function
 def compute_summary(df, group_by):
     summary = df.groupby(group_by)[cols_to_numeric].sum().reset_index()
@@ -52,7 +85,7 @@ def highlight_percent(val):
 
 # Display summaries
 st.subheader("Summary by Date")
-summary_date = compute_summary(df_hts, 'date')
+summary_date = compute_summary(df_hts_filtered, 'date')
 st.dataframe(summary_date.style.applymap(highlight_percent, subset=['% Screened', '% Positive']).format({
     'workload': '{:,.0f}', 'screened': '{:,.0f}', '% Screened': '{:.1f}%',
     'total_test': '{:,.0f}', 'total_pos': '{:,.0f}', '% Positive': '{:.1f}%',
@@ -60,7 +93,7 @@ st.dataframe(summary_date.style.applymap(highlight_percent, subset=['% Screened'
 }))
 
 st.subheader("Summary by Counselor")
-summary_counselor = compute_summary(df_hts, 'counselor_name')
+summary_counselor = compute_summary(df_hts_filtered, 'counselor_name')
 st.dataframe(summary_counselor.style.applymap(highlight_percent, subset=['% Screened', '% Positive']).format({
     'workload': '{:,.0f}', 'screened': '{:,.0f}', '% Screened': '{:.1f}%',
     'total_test': '{:,.0f}', 'total_pos': '{:,.0f}', '% Positive': '{:.1f}%',
@@ -68,7 +101,7 @@ st.dataframe(summary_counselor.style.applymap(highlight_percent, subset=['% Scre
 }))
 
 st.subheader("Summary by Facility")
-summary_facility = compute_summary(df_hts, 'health_facility')
+summary_facility = compute_summary(df_hts_filtered, 'health_facility')
 st.dataframe(summary_facility.style.applymap(highlight_percent, subset=['% Screened', '% Positive']).format({
     'workload': '{:,.0f}', 'screened': '{:,.0f}', '% Screened': '{:.1f}%',
     'total_test': '{:,.0f}', 'total_pos': '{:,.0f}', '% Positive': '{:.1f}%',
