@@ -11,7 +11,7 @@ KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
 ASSET_UID = "acbnBWmKaSwFH3duCpXeYz"
 st.set_page_config(page_title="Weekly Appointment Dashboard", layout="wide")
 
-# --- Sidebar ---
+# --- Sidebar --
 st.sidebar.title("Appointment Dashboard")
 
 # --- Fetch KoboToolbox Data ---
