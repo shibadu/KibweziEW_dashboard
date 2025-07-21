@@ -11,7 +11,7 @@ KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
 ASSET_UID = "acbnBWmKaSwFH3duCpXeYz"
 st.set_page_config(page_title="Weekly Appointment Dashboard", layout="wide")
 
-# --- Sidebar --
+# --- Sidebar ---
 st.sidebar.title("Appointment Dashboard")
 
 # --- Fetch KoboToolbox Data ---
@@ -138,4 +138,17 @@ if KOBO_TOKEN and ASSET_UID:
             'honored': 'sum'
         }).reset_index()
         heatmap_data['% Honored'] = (heatmap_data['honored'] / heatmap_data['booked']) * 100
-        heatmap_pivot = heatmap_data.pivot
+        heatmap_pivot = heatmap_data.pivot(index='health_facility', columns='week', values='% Honored')
+
+        fig3, ax3 = plt.subplots(figsize=(14, 8))
+        sns.heatmap(heatmap_pivot, annot=True, fmt=".1f", cmap="YlGnBu", cbar_kws={'label': '% Honored'}, ax=ax3)
+        ax3.set_title("Facility-wise % Honored by Week")
+        ax3.set_ylabel("Health Facility")
+        ax3.set_xlabel("Week")
+        plt.xticks(rotation=45, ha='right')
+        st.pyplot(fig3)
+
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+else:
+    st.info("Please enter your Kobo Token and Asset UID to load data.")
