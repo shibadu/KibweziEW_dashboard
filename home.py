@@ -3,6 +3,17 @@ from datetime import date
 
 st.set_page_config(page_title="Welcome | Kibwezi EW Data Dashboards", layout="centered")
 
+# Hide Streamlit branding and footer
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .viewerBadge_container__1QSob, .viewerBadge_link__1S137 {display: none;}
+    </style>
+    """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 st.title("📊 Kibwezi EW Data Dashboards")
 
 st.markdown("""

@@ -34,7 +34,7 @@ def fetch_data():
 df_hts = fetch_data()
 
 # Preprocess
-cols_to_numeric = ['workload', 'screened', 'total_test', 'total_pos', 'hivst']
+cols_to_numeric = ['workload', 'screened', 'under15_Tested', 'over15_Tested', 'total_test', 'total_pos', 'pns_pos','prep_new', 'prep_newpgbf', 'S', 'hivst']
 df_hts[cols_to_numeric] = df_hts[cols_to_numeric].apply(pd.to_numeric, errors='coerce')
 df_hts['date'] = pd.to_datetime(df_hts['date_test'])
 df_hts['% Screened'] = (df_hts['screened'] / df_hts['workload']) * 100
