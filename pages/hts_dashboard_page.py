@@ -59,8 +59,8 @@ selected_facility = st.sidebar.selectbox("Select Facility", facilities)
 
 # Apply filters
 df_hts_filtered = df_hts[
-    (df_hts['date'] >= pd.to_datetime(start_date)) &
-    (df_hts['date'] <= pd.to_datetime(end_date))
+    (df_hts['date'] >= pd.to_datetime(start_filter)) &
+    (df_hts['date'] <= pd.to_datetime(end_filter))
 ]
 
 if selected_counselor != 'All':
