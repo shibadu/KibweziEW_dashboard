@@ -8,12 +8,12 @@ st.title("📊 Kibwezi EW Data Dashboards")
 st.markdown("""
 Welcome to team Kibwezi EW monitoring dashboards.
 
-These dashboards provide nera real-time data visualizations to support the team's performance tracking.
+These dashboards provide near real-time data visualizations to support the team's performance tracking.
 
 **Available Dashboards:**
 
 - 🔬 **HTS Per Counselor Summary Dashboard** — Track screening, testing, and HIVST by date, counselor, and facility.
-- 📅 **Weekly Appointment Dashboard** — Monitor appointment adherence, tracing, and follow-ups week by week.
+- 📅 **Weekly Appointment Dashboard** — Monitors appointment adherence, tracing, and follow-ups week by week.
 
 Use the sidebar on the left to navigate between dashboards.
 
