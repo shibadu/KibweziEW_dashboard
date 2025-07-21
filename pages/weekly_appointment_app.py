@@ -1,20 +1,20 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
 import matplotlib.pyplot as plt
+import seaborn as sns
 from datetime import datetime
 
+# --- Configuration ---
 KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
 ASSET_UID = "acbnBWmKaSwFH3duCpXeYz"
-
 st.set_page_config(page_title="Weekly Appointment Dashboard", layout="wide")
 
-# --- Sidebar: Configuration ---
+# --- Sidebar ---
 st.sidebar.title("Appointment Dashboard")
 
-# Fetch KoboToolbox data
+# --- Fetch KoboToolbox Data ---
 @st.cache_data(ttl=3600)
 def fetch_kobo_data(token, asset_uid):
     headers = {'Authorization': f'Token {token}'}
@@ -24,7 +24,7 @@ def fetch_kobo_data(token, asset_uid):
     raw_data = response.json()['results']
     return pd.json_normalize(raw_data)
 
-# Load data
+# --- Load and Process Data ---
 if KOBO_TOKEN and ASSET_UID:
     try:
         df = fetch_kobo_data(KOBO_TOKEN, ASSET_UID)
@@ -45,25 +45,22 @@ if KOBO_TOKEN and ASSET_UID:
             'From (Friday Previous week):': 'date_start',
             'To (Thursday reporting week):': 'date_end'
         })
-
         df['date_start'] = pd.to_datetime(df['date_start'], errors='coerce')
         df['date_end'] = pd.to_datetime(df['date_end'], errors='coerce')
 
-        # Sidebar date range filter
+        # --- Sidebar Filters ---
         min_date = df['date_start'].min().date()
         max_date = df['date_end'].max().date()
         start_filter = st.sidebar.date_input("Start Date", min_value=min_date, max_value=max_date, value=min_date)
         end_filter = st.sidebar.date_input("End Date", min_value=min_date, max_value=max_date, value=max_date)
 
-        # Filter table data
+        # --- Filtered Data ---
         filtered_df = df[(df['date_start'].dt.date >= start_filter) & (df['date_end'].dt.date <= end_filter)].copy()
-
-        # Compute metrics
         filtered_df['% Honored'] = (filtered_df['honored'] / filtered_df['booked']) * 100
         filtered_df['% Traced Back'] = np.where(filtered_df['missed'] > 0, (filtered_df['traced_back'] / filtered_df['missed']) * 100, np.nan)
         filtered_df['% Prior Called'] = (filtered_df['prior_call'] / filtered_df['booked']) * 100
 
-        # Display table
+        # --- Display Table ---
         display_df = filtered_df[['health_facility', 'booked', 'honored', '% Honored', 'missed',
                                   'traced_back', '% Traced Back', 'prior_call', '% Prior Called']]
         display_df.columns = ['Facility Name', 'Booked', 'Honored', '% Honored', 'Missed',
@@ -81,7 +78,7 @@ if KOBO_TOKEN and ASSET_UID:
         st.subheader("📊 Weekly Appointment Data (Filtered)")
         st.dataframe(styled_table)
 
-        # Weekly trends for all data
+        # --- Weekly Trends ---
         df = df.dropna(subset=['date_start', 'date_end'])
         df['week'] = df['date_start'].dt.strftime('%Y-%m-%d') + ' to ' + df['date_end'].dt.strftime('%Y-%m-%d')
 
@@ -95,7 +92,7 @@ if KOBO_TOKEN and ASSET_UID:
         weekly['% Honored'] = (weekly['honored'] / weekly['booked']) * 100
         weekly['% Traced Back'] = np.where(weekly['missed'] > 0, (weekly['traced_back'] / weekly['missed']) * 100, np.nan)
 
-        # Plot 1: % Honored
+        # --- Plot 1: % Honored ---
         st.subheader("📈 Weekly % Honored with Booked and Honored Counts")
         fig1, ax1 = plt.subplots(figsize=(12, 6))
         x = range(len(weekly))
@@ -115,7 +112,7 @@ if KOBO_TOKEN and ASSET_UID:
         ax2.legend(loc='upper right')
         st.pyplot(fig1)
 
-        # Plot 2: % Traced Back
+        # --- Plot 2: % Traced Back ---
         st.subheader("📈 Weekly % Traced Back with Missed and Traced Counts")
         fig2, ax1 = plt.subplots(figsize=(12, 6))
         ax1.bar([i - bar_width/2 for i in x], weekly['missed'], width=bar_width, label='Missed', color='salmon')
@@ -134,7 +131,11 @@ if KOBO_TOKEN and ASSET_UID:
         ax2.legend(loc='upper right')
         st.pyplot(fig2)
 
-    except Exception as e:
-        st.error(f"Error loading data: {e}")
-else:
-    st.info("Please enter your Kobo Token and Asset UID to load data.")
+        # --- Heatmap: Facility-wise % Honored by Week (Unfiltered) ---
+        st.subheader("🗺️ Facility-wise % Honored by Week (All Data)")
+        heatmap_data = df.groupby(['health_facility', 'week']).agg({
+            'booked': 'sum',
+            'honored': 'sum'
+        }).reset_index()
+        heatmap_data['% Honored'] = (heatmap_data['honored'] / heatmap_data['booked']) * 100
+        heatmap_pivot = heatmap_data.pivot

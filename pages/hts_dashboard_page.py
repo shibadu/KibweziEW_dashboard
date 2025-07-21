@@ -37,12 +37,17 @@ st.sidebar.header("Filters")
 # Date filter
 min_date = df_hts['date'].min()
 max_date = df_hts['date'].max()
-start_date, end_date = st.sidebar.date_input(
-    "Select date range:",
-    value=(min_date, max_date),
-    min_value=min_date,
-    max_value=max_date
-)
+#min_date = df['date_start'].min().date()
+#max_date = df['date_end'].max().date()
+start_filter = st.sidebar.date_input("Start Date", min_value=min_date, max_value=max_date, value=min_date)
+end_filter = st.sidebar.date_input("End Date", min_value=min_date, max_value=max_date, value=max_date)
+
+#start_date, end_date = st.sidebar.date_input(
+#    "Select date range:",
+#    value=(min_date, max_date),
+#    min_value=min_date,
+#    max_value=max_date
+#)
 
 # Counselor filter
 counselors = ['All'] + sorted(df_hts['counselor_name'].dropna().unique().tolist())
