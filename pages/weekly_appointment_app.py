@@ -11,6 +11,16 @@ KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
 ASSET_UID = "acbnBWmKaSwFH3duCpXeYz"
 st.set_page_config(page_title="Weekly Appointment Dashboard", layout="wide")
 
+# Hide Streamlit branding and footer
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .viewerBadge_container__1QSob, .viewerBadge_link__1S137 {display: none;}
+    </style>
+    """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # --- Sidebar ---
 st.sidebar.title("Appointment Dashboard")
 
