@@ -17,7 +17,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.title("📊 Kibwezi EW Data Dashboards")
 
 st.markdown("""
-Welcome to team Kibwezi EW monitoring dashboards.
+Welcome to team Kibwezi EW data dashboards.
 
 These dashboards provide near real-time data visualizations to support the team's performance tracking.
 

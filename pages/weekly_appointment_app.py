@@ -85,7 +85,7 @@ if KOBO_TOKEN and ASSET_UID:
             '% Prior Called': '{:.2f}%'
         })
 
-        st.subheader("📊 Weekly Appointment Data (Filtered)")
+        st.subheader("📊 Weekly Appointment Data")
         st.dataframe(styled_table)
 
         # --- Weekly Trends ---
@@ -103,7 +103,7 @@ if KOBO_TOKEN and ASSET_UID:
         weekly['% Traced Back'] = np.where(weekly['missed'] > 0, (weekly['traced_back'] / weekly['missed']) * 100, np.nan)
 
         # --- Plot 1: % Honored ---
-        st.subheader("📈 Weekly % Honored with Booked and Honored Counts")
+        st.subheader("📈 % Honored weekly trends")
         fig1, ax1 = plt.subplots(figsize=(12, 6))
         x = range(len(weekly))
         bar_width = 0.35
@@ -123,7 +123,7 @@ if KOBO_TOKEN and ASSET_UID:
         st.pyplot(fig1)
 
         # --- Plot 2: % Traced Back ---
-        st.subheader("📈 Weekly % Traced Back with Missed and Traced Counts")
+        st.subheader("📈 % Traced Back weekly trends")
         fig2, ax1 = plt.subplots(figsize=(12, 6))
         ax1.bar([i - bar_width/2 for i in x], weekly['missed'], width=bar_width, label='Missed', color='salmon')
         ax1.bar([i + bar_width/2 for i in x], weekly['traced_back'], width=bar_width, label='Traced Back', color='orange')
@@ -142,7 +142,7 @@ if KOBO_TOKEN and ASSET_UID:
         st.pyplot(fig2)
 
         # --- Heatmap: Facility-wise % Honored by Week (Unfiltered) ---
-        st.subheader("🗺️ Facility-wise % Honored by Week (All Data)")
+        st.subheader("🗺️ Facility-wise % Honored by Week")
         heatmap_data = df.groupby(['health_facility', 'week']).agg({
             'booked': 'sum',
             'honored': 'sum'
@@ -152,7 +152,7 @@ if KOBO_TOKEN and ASSET_UID:
 
         fig3, ax3 = plt.subplots(figsize=(14, 8))
         sns.heatmap(heatmap_pivot, annot=True, fmt=".1f", cmap="YlGnBu", cbar_kws={'label': '% Honored'}, ax=ax3)
-        ax3.set_title("Facility-wise % Honored by Week")
+        ax3.set_title("% Honored by Week")
         ax3.set_ylabel("Health Facility")
         ax3.set_xlabel("Week")
         plt.xticks(rotation=45, ha='right')
