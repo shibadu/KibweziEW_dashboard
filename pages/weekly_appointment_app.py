@@ -107,7 +107,7 @@ if KOBO_TOKEN and ASSET_UID:
         fig1, ax1 = plt.subplots(figsize=(12, 6))
         x = range(len(weekly))
         bar_width = 0.35
-        ax1.bar([i - bar_width/2 for i in x], weekly['booked'], width=bar_width, label='Booked', color='blue')
+        ax1.bar([i - bar_width/2 for i in x], weekly['booked'], width=bar_width, label='Booked', color='darkblue')
         ax1.bar([i + bar_width/2 for i in x], weekly['honored'], width=bar_width, label='Honored', color='red')
         ax1.set_xticks(x)
         ax1.set_xticklabels(weekly['week'], rotation=45, ha='right')
@@ -126,7 +126,7 @@ if KOBO_TOKEN and ASSET_UID:
         st.subheader("📈 % Traced Back weekly trends")
         fig2, ax1 = plt.subplots(figsize=(12, 6))
         ax1.bar([i - bar_width/2 for i in x], weekly['missed'], width=bar_width, label='Missed', color='red')
-        ax1.bar([i + bar_width/2 for i in x], weekly['traced_back'], width=bar_width, label='Traced Back', color='black')
+        ax1.bar([i + bar_width/2 for i in x], weekly['traced_back'], width=bar_width, label='Traced Back', color='orange')
         ax1.set_xticks(x)
         ax1.set_xticklabels(weekly['week'], rotation=45, ha='right')
         ax1.set_ylabel('Number of Clients')
