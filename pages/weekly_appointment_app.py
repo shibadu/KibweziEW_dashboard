@@ -117,7 +117,7 @@ if KOBO_TOKEN and ASSET_UID:
         ax2 = ax1.twinx()
         ax2.plot(x, weekly['% Honored'], color='black', marker='o', label='% Honored')
         for i, val in enumerate(weekly['% Honored']):
-            ax2.text(i, val + 1, f'{val:.1f}%', color='orange', ha='center')
+            ax2.text(i, val + 1, f'{val:.1f}%', color='black', ha='center')
         ax2.set_ylabel('% Honored')
         ax2.legend(loc='upper right')
         st.pyplot(fig1)
