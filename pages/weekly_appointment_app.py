@@ -117,7 +117,7 @@ if KOBO_TOKEN and ASSET_UID:
         ax2 = ax1.twinx()
         ax2.plot(x, weekly['% Honored'], color='darkgreen', marker='o', label='% Honored')
         for i, val in enumerate(weekly['% Honored']):
-            ax2.text(i, val + 1, f'{val:.1f}%', color='darkgreen', ha='center')
+            ax2.text(i, val + 1, f'{val:.1f}%', color='red', ha='center')
         ax2.set_ylabel('% Honored')
         ax2.legend(loc='upper right')
         st.pyplot(fig1)
@@ -133,7 +133,7 @@ if KOBO_TOKEN and ASSET_UID:
         ax1.legend(loc='upper left')
 
         ax2 = ax1.twinx()
-        ax2.plot(x, weekly['% Traced Back'], color='red', marker='o', label='% Traced Back')
+        ax2.plot(x, weekly['% Traced Back'], color='orange', marker='o', label='% Traced Back')
         for i, val in enumerate(weekly['% Traced Back']):
             if pd.notna(val):
                 ax2.text(i, val + 1, f'{val:.1f}%', color='red', ha='center')
