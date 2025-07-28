@@ -107,17 +107,17 @@ if KOBO_TOKEN and ASSET_UID:
         fig1, ax1 = plt.subplots(figsize=(12, 6))
         x = range(len(weekly))
         bar_width = 0.35
-        ax1.bar([i - bar_width/2 for i in x], weekly['booked'], width=bar_width, label='Booked', color='purple')
-        ax1.bar([i + bar_width/2 for i in x], weekly['honored'], width=bar_width, label='Honored', color='seagreen')
+        ax1.bar([i - bar_width/2 for i in x], weekly['booked'], width=bar_width, label='Booked', color='c43145')
+        ax1.bar([i + bar_width/2 for i in x], weekly['honored'], width=bar_width, label='Honored', color='177e89')
         ax1.set_xticks(x)
         ax1.set_xticklabels(weekly['week'], rotation=45, ha='right')
         ax1.set_ylabel('Number of Clients')
         ax1.legend(loc='upper left')
 
         ax2 = ax1.twinx()
-        ax2.plot(x, weekly['% Honored'], color='red', marker='o', label='% Honored')
+        ax2.plot(x, weekly['% Honored'], color='2d3047', marker='o', label='% Honored')
         for i, val in enumerate(weekly['% Honored']):
-            ax2.text(i, val + 1, f'{val:.1f}%', color='red', ha='center')
+            ax2.text(i, val + 1, f'{val:.1f}%', color='2d3047', ha='center')
         ax2.set_ylabel('% Honored')
         ax2.legend(loc='upper right')
         st.pyplot(fig1)
