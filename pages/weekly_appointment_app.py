@@ -107,7 +107,7 @@ if KOBO_TOKEN and ASSET_UID:
         fig1, ax1 = plt.subplots(figsize=(12, 6))
         x = range(len(weekly))
         bar_width = 0.35
-        ax1.bar([i - bar_width/2 for i in x], weekly['booked'], width=bar_width, label='Booked', color='skyblue')
+        ax1.bar([i - bar_width/2 for i in x], weekly['booked'], width=bar_width, label='Booked', color='purple')
         ax1.bar([i + bar_width/2 for i in x], weekly['honored'], width=bar_width, label='Honored', color='seagreen')
         ax1.set_xticks(x)
         ax1.set_xticklabels(weekly['week'], rotation=45, ha='right')
@@ -125,8 +125,8 @@ if KOBO_TOKEN and ASSET_UID:
         # --- Plot 2: % Traced Back ---
         st.subheader("📈 % Traced Back weekly trends")
         fig2, ax1 = plt.subplots(figsize=(12, 6))
-        ax1.bar([i - bar_width/2 for i in x], weekly['missed'], width=bar_width, label='Missed', color='salmon')
-        ax1.bar([i + bar_width/2 for i in x], weekly['traced_back'], width=bar_width, label='Traced Back', color='orange')
+        ax1.bar([i - bar_width/2 for i in x], weekly['missed'], width=bar_width, label='Missed', color='red')
+        ax1.bar([i + bar_width/2 for i in x], weekly['traced_back'], width=bar_width, label='Traced Back', color='black')
         ax1.set_xticks(x)
         ax1.set_xticklabels(weekly['week'], rotation=45, ha='right')
         ax1.set_ylabel('Number of Clients')
@@ -151,7 +151,7 @@ if KOBO_TOKEN and ASSET_UID:
         heatmap_pivot = heatmap_data.pivot(index='health_facility', columns='week', values='% Honored')
 
         fig3, ax3 = plt.subplots(figsize=(14, 8))
-        sns.heatmap(heatmap_pivot, annot=True, fmt=".1f", cmap="YlGnBu", cbar_kws={'label': '% Honored'}, ax=ax3)
+        sns.heatmap(heatmap_pivot, annot=True, fmt=".1f", cmap="Spectral", cbar_kws={'label': '% Honored'}, ax=ax3)
         ax3.set_title("% Honored by Week")
         ax3.set_ylabel("Health Facility")
         ax3.set_xlabel("Week")
