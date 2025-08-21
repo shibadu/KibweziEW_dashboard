@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import requests
-
+import matplotlib.pyplot as plt
 # --- Configuration ---
 KOBO_TOKEN = '5d64990c18958166334c29d4664653d2d0c20649'  # Replace with your actual token
 ASSET_UID = 'abwfEv8qS6WJNPkSgCdYsn'  # Replace with your actual asset UID
@@ -88,3 +88,28 @@ if df is not None:
         st.dataframe(status_table.style.format({'Count': '{:.0f}'}), hide_index=True)
     else:
         st.warning(f"Column '{status_col}' not found in data.")
+
+    # --- 6. Gender Pie Chart ---
+    st.header("6. Gender Distribution")
+    if 'gender' in df.columns:
+        gender_counts = df['gender'].value_counts().reset_index()
+        gender_counts.columns = ['Gender', 'Count']
+        fig, ax = plt.subplots()
+        ax.pie(gender_counts['Count'], labels=gender_counts['Gender'], autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
+        st.pyplot(fig)
+    else:
+        st.warning("Column 'gender' not found in data.")
+        # --- 7. Profession Distribution ---
+    st.header("7. Profession Distribution")
+    if 'prof' in df.columns:
+        prof_counts = df['prof'].value_counts().reset_index()
+        prof_counts.columns = ['Profession', 'Count']
+        prof_chart = alt.Chart(prof_counts).mark_bar().encode(
+            x=alt.X('Profession', sort='-y', title='Profession'),
+            y=alt.Y('Count', title='Number of Clients'),
+            color='Profession'
+            ).properties(title="Profession Breakdown")
+        st.altair_chart(prof_chart, use_container_width=True)
+    else:
+        st.warning("Column 'prof' not found in data.")
