@@ -2,10 +2,12 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import requests
+import streamlit as st
+import numpy as np
 
 # --- Configuration ---
-KOBO_TOKEN = "5d64990c18958166334c29d4664653d2d0c20649"
-ASSET_UID = "abwfEv8qS6WJNPkSgCdYsn"
+KOBO_TOKEN = '5d64990c18958166334c29d4664653d2d0c20649'  # Replace with your actual token
+ASSET_UID = 'abwfEv8qS6WJNPkSgCdYsn'
 st.set_page_config(page_title="LTFU AUDIT Dashboard", layout="wide")
 
 # Hide Streamlit branding and footer
