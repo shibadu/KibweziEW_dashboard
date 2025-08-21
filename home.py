@@ -25,6 +25,7 @@ These dashboards provide near real-time data visualizations to support the team'
 
 - 🔬 **HTS Per Counselor Summary Dashboard** — Track screening, testing, and HIVST by date, counselor, and facility.
 - 📅 **Weekly Appointment Dashboard** — Monitors appointment adherence, tracing, and follow-ups week by week.
+- 🏥 **LTFU Audit Dashboard** — Summarizes facilities audited, clients per facility, and LTFU status.            
 
 Use the sidebar on the left to navigate between dashboards.
 
